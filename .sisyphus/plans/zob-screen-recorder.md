@@ -1177,7 +1177,7 @@ Wave FINAL — 4 parallel reviews:
   - Message: `feat: home screen with recording controls and history`
   - Files: `app/src/main/java/com/zob/recorder/ui/home/`
 
-- [ ] 17. **Visual drag-and-drop scene editor**
+- [x] 17. **Visual drag-and-drop scene editor**
 
   **What to do**:
   - Create `com.zob.recorder.ui.sceneeditor` package:

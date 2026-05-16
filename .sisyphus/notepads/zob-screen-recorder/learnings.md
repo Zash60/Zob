@@ -158,3 +158,17 @@
 - **SnackbarHost** for error messages
 - `material-icons-extended` confirmed in compose bundle → all icons available
 
+## Wave 4: Scene Editor (AD-6, T19)
+### SceneEditorScreen Implementation
+- **Files created**: `SceneEditorScreen.kt`, `SceneEditorViewModel.kt`, `DraggablePreview.kt`, `SourceConfigPanel.kt`
+- **Package**: `com.zob.recorder.ui.screens.sceneeditor`
+- **Signature**: `SceneEditorScreen(sceneId: String, navController: NavController, viewModel: SceneEditorViewModel = hiltViewModel())`
+- **ViewModel pattern**: `@HiltViewModel`, `MutableStateFlow<SceneEditorUiState>`, `uiState: StateFlow<SceneEditorUiState>`
+- **UiState**: `scene: Scene?`, `selectedSourceId: String?`, `isDirty: Boolean`, `isLoading: Boolean`, `errorMessage: String?`
+- **Actions**: `addTextSource()`, `addImageSource(uri)`, `removeSource(id)`, `updateSourcePosition(id, x, y)`, `updateSourceSize(id, w, h)`, `updateSourceOpacity(id, opacity)`, `updateTextSourceConfig(id, text, fontSize, color)`, `updateImageSourceConfig(id, uri, scaleType)`, `reorderSources(ids)`, `setTransition(type)`, `selectSource(id?)`
+- **DraggablePreview**: Canvas-based with `pointerInput` for tap-to-select and drag-to-move. Scene coordinates (1920x1080) scaled to canvas size. Grid overlay shown during drag.
+- **SourceConfigPanel**: ModalBottomSheet with dynamic content per source type. Position X/Y with steppers, Width/Height with sliders, opacity slider. TextSource: text input, font size slider, color preset picker. ImageSource: URI input, scale type selector (FIT/CROP/STRETCH). ScreenSource: info card only.
+- **Source list**: LazyColumn with up/down reorder buttons, delete button, "+ Add Source" dropdown (Screen/Text/Image). Image picker via `rememberLauncherForActivityResult(ActivityResultContracts.GetContent())`.
+- **Auto-save**: Delegated to SceneManager's built-in 500ms debounce via `scheduleSave()`.
+- **LSP not available**: kotlin-lsp not installed; manual verification only.
+
