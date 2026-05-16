@@ -815,7 +815,7 @@ Wave FINAL — 4 parallel reviews:
   - Message: `feat: mediaprojection foreground recording service`
   - Files: `app/src/main/java/com/zob/recorder/service/ScreenRecorderService.kt`
 
-- [ ] 12. **RootEncoder wrapper (DisplayBase integration)**
+- [x] 12. **RootEncoder wrapper (DisplayBase integration)**
 
   **What to do**:
   - Create `com.zob.recorder.encoder` package:

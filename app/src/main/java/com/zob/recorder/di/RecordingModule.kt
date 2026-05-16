@@ -1,6 +1,7 @@
 package com.zob.recorder.di
 
 import android.content.Context
+import com.zob.recorder.encoder.StreamEncoder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,6 +16,14 @@ object RecordingModule {
     // AudioCapturer will be provided here when implemented in T13
     // SceneCompositor will be provided here when implemented in T14
     // RecordingStateManager will be provided here when implemented in T21
+
+    @Provides
+    @Singleton
+    fun provideStreamEncoder(
+        @ApplicationContext context: Context
+    ): StreamEncoder {
+        return StreamEncoder(context)
+    }
 
     @Provides
     @Singleton

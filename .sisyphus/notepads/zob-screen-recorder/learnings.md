@@ -67,3 +67,18 @@
 
 ### T10 — Notification Helper
 - **NotificationHelper.kt** — Creates "Zob Recording" channel (IMPORTANCE_LOW). Builds: recording notification (stop, pause/resume actions), streaming notification, error notification. Notification IDs: NOTIFICATION_ID_RECORDING=1001, NOTIFICATION_ID_STREAMING=1002, NOTIFICATION_ID_ERROR=1003.
+
+### T12 — StreamEncoder / EncoderConfig
+- **EncoderConfig.kt** — Data class with resolution (1920x1080 default), fps (30), bitrate (5Mbps), codec (H264/H265), audio settings (bitrate, sampleRate, stereo, internal vs mic).
+- **EncoderVideoCodec enum** — H264, H265 — maps to RootEncoder's `VideoCodec.H264`/`.H265`.
+- **StreamEncoder.kt** — Wraps RootEncoder's `RtmpDisplay(context, useOpengl=true, connectChecker)`.
+  - `RtmpDisplay` extends `DisplayBase` — handles VirtualDisplay→MediaCodec→RTMP/MP4 internally.
+  - `useOpengl=true` creates an internal OpenGL pipeline; `glInterface.getSurface()` returns the input Surface the compositor renders into.
+  - Implements `ConnectChecker` interface from `com.pedro.common`.
+  - `@Inject` removed in favor of explicit `@Provides` in `RecordingModule` (per task requirement).
+  - Methods: `initialize(config)`, `getInputSurface()`, `startStream(url, key)`, `startRecording(path)`, `startBoth(url, key, path)`, `stopStream()`, `stopRecording()`, `stopBoth()`, `pauseRecording()`, `resumeRecording()`, `release()`.
+  - Lambda callbacks: `onConnected`, `onDisconnected`, `onConnectionStarted`, `onConnectionFailed`, `onAuthError`, `onAuthSuccess`, `onBitrate`.
+  - State queries: `isStreaming`, `isRecording` (delegated to RtmpDisplay).
+  - URL builder: combines rtmpUrl + "/" + streamKey.
+- **RecordingModule.kt** — Added `provideStreamEncoder()` as `@Singleton @Provides`.
+- LSP unavailable in this environment (kotlin-ls not installed); manual API verification against RootEncoder dokka docs instead.
