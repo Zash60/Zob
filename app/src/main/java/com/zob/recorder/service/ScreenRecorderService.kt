@@ -14,10 +14,17 @@ import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
-import android.os.Looper
+import android.telephony.PhoneStateListener
+import android.telephony.TelephonyManager
 import android.util.DisplayMetrics
 import android.view.Display
-import com.zob.recorder.model.RecordingState
+import com.zob.recorder.encoder.StreamEncoder
+import com.zob.recorder.audio.AudioCapturer
+import com.zob.recorder.compositor.SceneCompositor
+import com.zob.recorder.data.RecordingRepository
+import android.os.Environment
+import java.io.File
+import com.zob.recorder.encoder.EncoderConfig
 import com.zob.recorder.notification.NotificationHelper
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -28,9 +35,14 @@ class ScreenRecorderService : Service() {
     @Inject lateinit var mediaProjectionManager: MediaProjectionManager
     @Inject lateinit var displayManager: DisplayManager
     @Inject lateinit var notificationHelper: NotificationHelper
+    @Inject lateinit var streamEncoder: StreamEncoder
+    @Inject lateinit var audioCapturer: AudioCapturer
+    @Inject lateinit var sceneCompositor: SceneCompositor
+    @Inject lateinit var recordingRepository: RecordingRepository
     @Inject lateinit var stateManager: RecordingStateManager
 
-    private var mediaProjection: MediaProjection? = null
+    private var telephonyManager: TelephonyManager? = null
+    private var phoneStateListener: PhoneStateListener? = null
     private var virtualDisplay: VirtualDisplay? = null
 
     private val handler = Handler(Looper.getMainLooper())
@@ -112,10 +124,26 @@ class ScreenRecorderService : Service() {
             return
         }
 
-        mediaProjection = projection
+        telephonyManager = getSystemService(TELEPHONY_SERVICE) as TelephonyManager
+        phoneStateListener = object : PhoneStateListener() {
+            override fun onCallStateChanged(state: Int, phoneNumber: String?) {
+                if (state == TelephonyManager.CALL_STATE_RINGING || state == TelephonyManager.CALL_STATE_OFFHOOK) {
+                    streamEncoder.pauseRecording()
+                } else if (state == TelephonyManager.CALL_STATE_IDLE) {
+                    streamEncoder.resumeRecording()
+                }
+            }
+        }
+        telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE)
 
-        // Register callback BEFORE creating VirtualDisplay (requirement)
         projection.registerCallback(projectionCallback, handler)
+
+        val config = EncoderConfig()
+        if (!streamEncoder.initialize(config)) {
+            stateManager.updateState(RecordingState.Error("Failed to initialize encoder"))
+            stopSelf()
+            return
+        }
 
         val metrics = DisplayMetrics()
         val display = displayManager.getDisplay(Display.DEFAULT_DISPLAY)
@@ -124,10 +152,14 @@ class ScreenRecorderService : Service() {
         val height = metrics.heightPixels
         val densityDpi = metrics.densityDpi
 
+        audioCapturer.setStreamEncoder(streamEncoder)
+        audioCapturer.startCapture(projection, kotlinx.coroutines.MainScope())
+
+        val surface = streamEncoder.getInputSurface()
         val surfaceTexture = SurfaceTexture(0).apply {
             setDefaultBufferSize(width, height)
         }
-        val surface = Surface(surfaceTexture)
+        sceneCompositor.start(surface, surfaceTexture, width, height)
 
         virtualDisplay = projection.createVirtualDisplay(
             "Zob",
@@ -135,12 +167,16 @@ class ScreenRecorderService : Service() {
             height,
             densityDpi,
             DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-            surface,
+            Surface(surfaceTexture),
             null,
             handler
         )
 
-        stateManager.updateState(RecordingState.Recording())
+        val fileName = "Zob_${System.currentTimeMillis()}.mp4"
+        val file = File(getExternalFilesDir(Environment.DIRECTORY_MOVIES), fileName)
+        streamEncoder.startRecording(file.absolutePath)
+
+        stateManager.updateState(RecordingState.Recording(filePath = file.absolutePath))
 
         val recordingNotification = notificationHelper.buildRecordingNotification(
             elapsedSeconds = 0,
@@ -166,13 +202,23 @@ class ScreenRecorderService : Service() {
         mediaProjection?.stop()
         mediaProjection = null
 
-        notificationHelper.dismissRecordingNotification()
+        streamEncoder.stopRecording()
+        audioCapturer.stopCapture()
+        sceneCompositor.stop()
+        telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE)
+        phoneStateListener = null
+
         stopForeground(STOP_FOREGROUND_REMOVE)
         stateManager.updateState(RecordingState.Idle)
         stopSelf()
     }
 
     override fun onDestroy() {
+        telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE)
+        phoneStateListener = null
+        streamEncoder.release()
+        audioCapturer.stopCapture()
+        sceneCompositor.stop()
         if (mediaProjection != null) {
             virtualDisplay?.release()
             virtualDisplay = null

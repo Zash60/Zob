@@ -1435,7 +1435,7 @@ Wave FINAL — 4 parallel reviews:
   - Message: `feat: recording playback and file management`
   - Files: `app/src/main/java/com/zob/recorder/ui/playback/`
 
-- [ ] 21. **Recording flow integration (full pipeline)**
+- [x] 21. **Recording flow integration (full pipeline)**
 
   **What to do**:
   - Integrate all components into a single recording flow:
@@ -1528,7 +1528,7 @@ Wave FINAL — 4 parallel reviews:
   - Message: `feat: recording flow integration (full pipeline)`
   - Files: `app/src/main/java/com/zob/recorder/service/RecordingStateManager.kt`
 
-- [ ] 22. **Recording lifecycle edge cases**
+- [x] 22. **Recording lifecycle edge cases**
 
   **What to do**:
   - **Process death during recording**:
