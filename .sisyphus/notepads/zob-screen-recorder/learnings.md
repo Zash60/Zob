@@ -36,3 +36,10 @@
 - **ThemeMode** — Already defined as enum in `com.zob.recorder.model.AppSettings.kt` with values LIGHT, DARK, SYSTEM
 - NO dynamic color / Monet — fixed palettes only
 - Source files placed under `app/src/main/java/com/zob/recorder/ui/theme/` (standard AGP layout, java/ root)
+
+## CI/CD and Project Scaffold (Wave 1, Task 5)
+- **`.github/workflows/ci.yml`** — CI on push/PR to main: JDK 17, assembleDebug + lint, upload APK artifact (7-day retention)
+- **`.github/workflows/release.yml`** — Manual `workflow_dispatch` with version input: decodes base64 keystore from secret, builds signed release APK, uploads artifact (90-day retention)
+- **`.gitignore`** — Standard Android ignores: build, .gradle, local.properties, *.apk, *.aab, *.jks, signing.properties
+- **`README.md`** — Project overview with features, tech stack table, build instructions, CI badge placeholder, MIT license
+- **Git** — Repo initialized on `main` branch with initial commit
