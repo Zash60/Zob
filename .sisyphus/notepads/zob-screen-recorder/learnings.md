@@ -199,3 +199,8 @@
 - **All settings persist via SettingsRepository** on each change
 - **collectAsState import**: must use `import androidx.compose.runtime.collectAsState` (not auto-imported by all IDEs)
 
+## Recording Playback Screen Implementation
+- Created PlaybackViewModel.kt, RecordingHistoryList.kt, and updated RecordingPlaybackScreen.kt.
+- Implemented video playback using VideoView via AndroidView.
+- Implemented RecordingHistoryList with long-press context menu.
+- Followed MVVM pattern and used Hilt for DI.
