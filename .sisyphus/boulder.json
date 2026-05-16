@@ -1,0 +1,63 @@
+{
+  "schema_version": 2,
+  "active_work_id": "zob-screen-recorder-40b67787",
+  "works": {
+    "zob-screen-recorder-40b67787": {
+      "work_id": "zob-screen-recorder-40b67787",
+      "active_plan": "/root/Zob/.sisyphus/plans/zob-screen-recorder.md",
+      "plan_name": "zob-screen-recorder",
+      "status": "active",
+      "started_at": "2026-05-16T13:05:53.707Z",
+      "updated_at": "2026-05-16T13:10:04.414Z",
+      "session_ids": [
+        "ses_1cf5dd470ffeoelTOkTSeBhrM2"
+      ],
+      "session_origins": {
+        "ses_1cf5dd470ffeoelTOkTSeBhrM2": "direct"
+      },
+      "agent": "atlas",
+      "task_sessions": {
+        "todo:1": {
+          "task_key": "todo:1",
+          "task_label": "1",
+          "task_title": "**Gradle project setup + version catalog + build config**",
+          "session_id": "ses_1cf1aa8a9ffeguHhduEO4izgI6",
+          "agent": "Sisyphus-Junior",
+          "category": "unspecified-high",
+          "updated_at": "2026-05-16T13:10:04.414Z",
+          "started_at": "2026-05-16T13:08:50.220Z",
+          "status": "completed",
+          "ended_at": "2026-05-16T13:10:04.406Z",
+          "elapsed_ms": 74186
+        }
+      }
+    }
+  },
+  "active_plan": "/root/Zob/.sisyphus/plans/zob-screen-recorder.md",
+  "started_at": "2026-05-16T13:05:53.707Z",
+  "status": "active",
+  "updated_at": "2026-05-16T13:10:04.414Z",
+  "session_ids": [
+    "ses_1cf5dd470ffeoelTOkTSeBhrM2"
+  ],
+  "session_origins": {
+    "ses_1cf5dd470ffeoelTOkTSeBhrM2": "direct"
+  },
+  "plan_name": "zob-screen-recorder",
+  "task_sessions": {
+    "todo:1": {
+      "task_key": "todo:1",
+      "task_label": "1",
+      "task_title": "**Gradle project setup + version catalog + build config**",
+      "session_id": "ses_1cf1aa8a9ffeguHhduEO4izgI6",
+      "agent": "Sisyphus-Junior",
+      "category": "unspecified-high",
+      "updated_at": "2026-05-16T13:10:04.414Z",
+      "started_at": "2026-05-16T13:08:50.220Z",
+      "status": "completed",
+      "ended_at": "2026-05-16T13:10:04.406Z",
+      "elapsed_ms": 74186
+    }
+  },
+  "agent": "atlas"
+}

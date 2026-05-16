@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Zob" parent="android:Theme.Material.Light.NoActionBar">
+        <!-- Compose handles theming; this is just the system splash/startup theme -->
+    </style>
+</resources>
