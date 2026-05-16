@@ -959,7 +959,7 @@ Wave FINAL — 4 parallel reviews:
   - Message: `feat: audio capture and mixing pipeline`
   - Files: `app/src/main/java/com/zob/recorder/audio/`
 
-- [ ] 14. **OpenGL ES scene compositing engine**
+- [x] 14. **OpenGL ES scene compositing engine**
 
   **What to do**:
   - Create `com.zob.recorder.compositor` package:

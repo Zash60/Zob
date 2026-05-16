@@ -96,3 +96,23 @@
 - **RecordingModule.kt** — Added `provideAudioCapturer()` as `@Singleton @Provides`.
 
 - LSP unavailable in this environment (kotlin-ls not installed); manual API verification against RootEncoder dokka docs instead.
+
+### T14 — OpenGL ES Scene Compositor
+- **Package**: `com.zob.recorder.compositor` — 5 files, ~1973 lines total.
+- **GLCanvasUtil.kt** — `object` with static GL helpers: shader compile/link, texture creation (2D, OES, empty), Bitmap→texture upload via `GLUtils.texImage2D`, FBO creation for render-to-texture, quad VBO/EBO creation, text→Bitmap Canvas rendering. Quad vertex layout: pos.xyz + tex.st (5 floats/vertex, 4 vertices).
+- **TextureRenderer.kt** — Renders OES (External) texture as full-screen quad. Uses `samplerExternalOES` with `#extension GL_OES_EGL_image_external_essl3`. SurfaceTexture transform matrix applied via `uTexMatrix` uniform.
+- **OverlayRenderer.kt** — Renders 2D texture overlays at configured position/size/opacity. Model matrix converts Android Y-down coordinates to OpenGL NDC. Texture cache via `LinkedHashMap` with LRU eviction (max 32 entries), keyed by source ID.
+- **TransitionRenderer.kt** — Manages CUT (instant) and FADE (cross-fade) transitions. FADE uses glBlitFramebuffer to snapshot current back buffer to FBO texture, then renders snapshot with decreasing alpha. Progress method returns 0..1 and auto-completes.
+- **SceneCompositor.kt** — Main orchestrator. Dedicated GL thread (`Thread("GL-Compositor")`) with ~33ms frame loop. EGL14 init with ES 3.0 context (EGL_CONTEXT_CLIENT_VERSION=3), `EGL_RECORDABLE_ANDROID=1` for MediaCodec compatibility. Window surface created from `StreamEncoder.getInputSurface()`. Screen SurfaceTexture attached via `attachToGLContext(OES_texture_id)`.
+- **Rendering pipeline** per frame:
+  1. Process pending texture uploads (async from caller thread via `ConcurrentLinkedQueue`)
+  2. Process pending scene transitions (lock-protected, supports first-scene, cut, fade)
+  3. Update screen capture (`SurfaceTexture.updateTexImage()` + getTransformMatrix)
+  4. Clear, sort sources by zOrder, render each (ScreenSource→TextureRenderer, TextSource→Canvas→texture→OverlayRenderer, ImageSource→OverlayRenderer)
+  5. Fade: render snapshot with (1-progress) alpha, blending, render new scene with progress alpha
+  6. Swap buffers
+  7. Pace to 30fps via `Thread.sleep`
+- **Fade transition** snapshot timing: render old scene → `startTransition()` blits FBO → clear → render snapshot + new scene with blend. Done in a single frame (two renders but one visible output).
+- **Thread sync model**: `AtomicBoolean` for lifecycle, `synchronized(sceneLock)` for scene transitions, `ConcurrentLinkedQueue` for texture uploads/invalidations. GL thread has no Looper — uses simple `while(isRunning)` loop.
+- **Min API 29 guarantees ES 3.0**: no fallback needed. Request ES 3.0 context, use `GLES30` API with `#version 300 es` shaders.
+- **Integration points**: `SceneCompositor.start(encoderInputSurface, screenSurfaceTexture, width, height)` — Service must pass from its VirtualDisplay SurfaceTexture. `requestScene(scene)` for scene changes. `updateImageTexture(sourceId, bitmap)` for image overlays.
