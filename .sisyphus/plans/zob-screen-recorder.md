@@ -1102,7 +1102,7 @@ Wave FINAL — 4 parallel reviews:
   - Message: `feat: scene manager with crud operations`
   - Files: `app/src/main/java/com/zob/recorder/scene/`
 
-- [ ] 16. **Home screen (recording controls + history)**
+- [x] 16. **Home screen (recording controls + history)**
 
   **What to do**:
   - Create `com.zob.recorder.ui.home` package:

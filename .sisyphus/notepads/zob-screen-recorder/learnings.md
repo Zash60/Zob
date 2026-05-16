@@ -127,3 +127,34 @@
 - **SceneModule.kt**: `@Module @InstallIn(SingletonComponent)` provides `@Named("scenesDir") File` for the scenes directory.
 - Integration: `onTransitionComplete()` for SceneCompositor to signal done. `onCleared()` for test lifecycle.
 - **Edge cases**: deleted active scene → first remaining scene becomes active; corrupted JSON → logs error, starts with defaults; setActiveScene with invalid ID → no-op.
+
+## Wave 4: Home Screen (T16-T18)
+### T16 — HomeViewModel
+- **File**: `app/src/main/java/com/zob/recorder/ui/screens/home/HomeViewModel.kt`
+- `@HiltViewModel` injecting `@ApplicationContext`, `RecordingStateManager`, `RecordingRepository`, `StreamEncoder`, `SettingsRepository`
+- `HomeUiState` data class: recordingState, recordings list, selectedPreset, isLoading, hasPermissions, isStreaming, errorMessage
+- Observes `RecordingStateManager.state` and `RecordingRepository.getRecordings()` in `init`
+- Actions: `startRecording(resultCode, data)` → `ScreenRecorderService.createStartIntent()` + `ContextCompat.startForegroundService`; `stopRecording()` → ACTION_STOP intent; `startStream()` → `StreamEncoder.startStream()` with RTMP URL/key from `SettingsRepository`; `stopStream()` → `StreamEncoder.stopStream()`; `selectPreset()`; `deleteRecording(uri)`
+- `PermissionManager` created inline from application context for permission checks
+
+### T17 — RecordingSummaryCard
+- **File**: `app/src/main/java/com/zob/recorder/ui/screens/home/RecordingSummaryCard.kt`
+- Reusable `@Composable RecordingSummaryCard(summary, onClick, onDelete, modifier)`
+- M3 `Card` with `AsyncImage` thumbnail (Coil), file name, duration icon+text, file size icon+text, date
+- Overflow menu (`MoreVert` → `DropdownMenu` → Delete with error-colored icon)
+- Package-level `internal` format utilities: `formatDuration(ms)`, `formatFileSize(bytes)`, `formatDate(epochMillis)`
+
+### T18 — HomeScreen
+- **File**: `app/src/main/java/com/zob/recorder/ui/screens/home/HomeScreen.kt`
+- `@Composable HomeScreen(viewModel: HomeViewModel = hiltViewModel(), navController: NavController)` — matches existing `AppNavHost` call
+- `rememberMediaProjectionLauncher` for screen capture consent; launches `MediaProjectionManager.createScreenCaptureIntent()` on record tap
+- States: `LoadingState` (centered spinner), `PermissionWarning` (when permissions revoked), `HomeContent` (main UI)
+- **TopAppBar**: "Zob" title + Settings gear icon navigating to `SettingsRoute`
+- **RecordingStatusCard**: Animated visibility card showing state label (Recording/Streaming/etc) with colored dot, duration, file size
+- **RecordButton**: 88dp Box with 72dp circular Surface; `rememberInfiniteTransition` pulse (scale 1.0→1.12, alpha 0.25→0.55, 900ms reverse) when recording; color animates primary↔error
+- **StreamToggle**: Card with Wifi/WifiOff icon, connected status, Start/Stop `FilledTonalButton`
+- **PresetChipsRow**: `FilterChip` per preset from `DEFAULT_PRESETS`
+- **Recent Recordings**: `LazyColumn` with `items(recordings, key={it.id})` + `EmptyState` (large Movie icon + text) when empty
+- **SnackbarHost** for error messages
+- `material-icons-extended` confirmed in compose bundle → all icons available
+
