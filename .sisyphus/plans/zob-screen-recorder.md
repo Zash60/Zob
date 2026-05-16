@@ -736,7 +736,7 @@ Wave FINAL — 4 parallel reviews:
   **Commit**: YES (groups with T8, T9)
   - Files: `app/src/main/java/com/zob/recorder/notification/`
 
-- [ ] 11. **MediaProjection foreground recording service**
+- [x] 11. **MediaProjection foreground recording service**
 
   **What to do**:
   - Create `com.zob.recorder.service` package:
