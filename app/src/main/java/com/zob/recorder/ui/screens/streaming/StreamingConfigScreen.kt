@@ -24,7 +24,7 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledButton
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -146,17 +146,17 @@ fun StreamingConfigScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             if (uiState.isStreaming) {
-                FilledButton(
+                Button(
                     onClick = { viewModel.stopStreaming() },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.filledButtonColors(
+                    colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error
                     )
                 ) {
                     Text("Stop Streaming")
                 }
             } else {
-                FilledButton(
+                Button(
                     onClick = { viewModel.startStreaming() },
                     modifier = Modifier.fillMaxWidth(),
                     enabled = uiState.urlError == null && uiState.keyError == null

@@ -13,9 +13,7 @@
         android:fillColor="#E8DEF8"
         android:pathData="M44,54m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0"/>
     <!-- Record dot -->
-    <circle
-        android:cx="54"
-        android:cy="54"
-        android:r="4"
-        android:fillColor="#FF0000"/>
+    <path
+        android:fillColor="#FF0000"
+        android:pathData="M54,54m-4,0a4,4 0,1 1,8 0a4,4 0,1 1,-8 0"/>
 </vector>
