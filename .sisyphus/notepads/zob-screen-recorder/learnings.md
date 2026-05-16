@@ -172,3 +172,30 @@
 - **Auto-save**: Delegated to SceneManager's built-in 500ms debounce via `scheduleSave()`.
 - **LSP not available**: kotlin-lsp not installed; manual verification only.
 
+## Wave 5: Streaming & Settings Screens
+### StreamingConfigScreen
+- **Files**: `StreamingConfigScreen.kt`, `StreamingViewModel.kt`, `QualityPresetSelector.kt`
+- **Package**: `com.zob.recorder.ui.screens.streaming`
+- **ViewModel pattern**: `@HiltViewModel`, `MutableStateFlow<StreamingUiState>`, `uiState: StateFlow<StreamingUiState>`
+- **UiState**: `streamConfig`, `urlError`, `keyError`, `connectionStatus` (enum: DISCONNECTED/CONNECTING/CONNECTED/FAILED), `connectionErrorMessage`, `isStreaming`, `selectedPresetId`
+- **Actions**: `setStreamConfig(url, key)`, `setUrl(url)`, `setStreamKey(key)`, `selectPreset(id)`, `testConnection()`, `startStreaming()`, `stopStreaming()`, `clearConnectionError()`
+- **URL validation**: must start with `rtmp://` or `rtmps://`, inline error via `supportingText` on `OutlinedTextField`
+- **Stream key**: password-masked with `PasswordVisualTransformation`, eye toggle via `Visibility`/`VisibilityOff` icons
+- **Connection status**: colored dot indicator (CircleShape + background) with label text
+- **QualityPresetSelector**: FilterChip row for Performance/Balanced/Quality presets, with `QualityPresetInfo` card showing resolution@fps and bitrate
+- **Encoder callbacks**: `onConnectionStarted`, `onConnected`, `onConnectionFailed`, `onDisconnected` wired to update UiState
+- **Persistence**: URL and key saved to `SettingsRepository` before test/start
+
+### SettingsScreen
+- **Files**: `SettingsScreen.kt`, `SettingsViewModel.kt`
+- **Package**: `com.zob.recorder.ui.screens.settings`
+- **ViewModel pattern**: `@HiltViewModel`, `MutableStateFlow<SettingsUiState>`, `uiState: StateFlow<SettingsUiState>`
+- **UiState**: `themeMode`, `selectedPresetId`, `selectedCodec`, `recordingResolution`, `recordingFps`, `recordingBitrate`, `audioEnabled`, `isLoading`
+- **Actions**: `setTheme(mode)`, `setPreset(id)`, `setCodec(codec)`, `setResolution(res)`, `setFps(fps)`, `setBitrate(bitrate)`, `setAudioEnabled(enabled)`
+- **Recording section**: preset selector (3 buttons), codec (H.264/H.265), resolution (720p/1080p/Native), FPS (24/30/60), audio toggle (Switch)
+- **Theme section**: Light/Dark/Follow System radio buttons with `selectableGroup` + `selectable` modifier
+- **Storage section**: save location info card, Clear Cache button (placeholder action)
+- **About section**: app version (v1.0.0), GitHub link (opens via `LocalUriHandler`), Open Source Licenses link
+- **All settings persist via SettingsRepository** on each change
+- **collectAsState import**: must use `import androidx.compose.runtime.collectAsState` (not auto-imported by all IDEs)
+

@@ -1254,7 +1254,7 @@ Wave FINAL — 4 parallel reviews:
   - Message: `feat: visual drag-and-drop scene editor`
   - Files: `app/src/main/java/com/zob/recorder/ui/sceneeditor/`
 
-- [ ] 18. **Streaming configuration screen**
+- [x] 18. **Streaming configuration screen**
 
   **What to do**:
   - Create `com.zob.recorder.ui.streaming` package:
@@ -1315,7 +1315,7 @@ Wave FINAL — 4 parallel reviews:
   **Commit**: YES (groups with T19)
   - Message: `feat: streaming configuration screen`
 
-- [ ] 19. **Settings screen**
+- [x] 19. **Settings screen**
 
   **What to do**:
   - Create `com.zob.recorder.ui.settings` package:
