@@ -81,4 +81,18 @@
   - State queries: `isStreaming`, `isRecording` (delegated to RtmpDisplay).
   - URL builder: combines rtmpUrl + "/" + streamKey.
 - **RecordingModule.kt** — Added `provideStreamEncoder()` as `@Singleton @Provides`.
+
+### T13 — AudioCapturer (MIC + Internal Audio Mixing)
+- **AudioConfig.kt** — Object with constants: SAMPLE_RATE=44100, CHANNELS=1 (MONO), FORMAT=ENCODING_PCM_16BIT, BUFFER_SIZE=1764 (20ms).
+- **AudioCapturer.kt** — Dual AudioRecord class: `micRecord` (MIC source) + `internalRecord` (AudioPlaybackCapture).
+  - `AudioPlaybackCaptureConfiguration` with `addMatchingUsage(USAGE_MEDIA)` and `addMatchingUsage(USAGE_GAME)`.
+  - Mixing coroutine on `Dispatchers.Default` reads PCM from both sources and mixes sample-by-sample with overflow clamping to `Short.MIN_VALUE..Short.MAX_VALUE`.
+  - `startCapture(mediaProjection, coroutineScope)` / `stopCapture()` lifecycle.
+  - Graceful fallback: if AudioPlaybackCapture fails (OEM blocking), logs warning and continues MIC-only.
+  - `setStreamEncoder(StreamEncoder)` bridges mixed PCM to the encoder.
+- **RootEncoder PCM injection limitation**: `RtmpDisplay`'s internal `AudioEncoder` is `protected` in `Camera2Base` — no public API for external PCM input. Added `AudioEncoderInjector` (in `StreamEncoder.kt`) that uses reflection to access the `audioEncoder` field and call `inputPCMData(Frame)`.
+- **`AudioEncoderInjector`**: Caches the reflected field and method. First tries `getAudioEncoder()` public getter (future-proofing), then walks the class hierarchy for `audioEncoder` field.
+- **`StreamEncoder.feedAudioPcm(buffer, size)`**: New method added to support external PCM injection from AudioCapturer.
+- **RecordingModule.kt** — Added `provideAudioCapturer()` as `@Singleton @Provides`.
+
 - LSP unavailable in this environment (kotlin-ls not installed); manual API verification against RootEncoder dokka docs instead.

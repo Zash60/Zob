@@ -892,7 +892,7 @@ Wave FINAL — 4 parallel reviews:
   - Message: `feat: rootencoder displaybase integration for streaming and recording`
   - Files: `app/src/main/java/com/zob/recorder/encoder/`
 
-- [ ] 13. **Audio capture and mixing pipeline**
+- [x] 13. **Audio capture and mixing pipeline**
 
   **What to do**:
   - Create `com.zob.recorder.audio` package:
