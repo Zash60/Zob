@@ -1036,7 +1036,7 @@ Wave FINAL — 4 parallel reviews:
   - Message: `feat: opengl es scene compositing engine`
   - Files: `app/src/main/java/com/zob/recorder/compositor/`
 
-- [ ] 15. **Scene manager (CRUD + active scene state)**
+- [x] 15. **Scene manager (CRUD + active scene state)**
 
   **What to do**:
   - Create `com.zob.recorder.scene` package:

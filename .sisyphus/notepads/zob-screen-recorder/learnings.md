@@ -116,3 +116,14 @@
 - **Thread sync model**: `AtomicBoolean` for lifecycle, `synchronized(sceneLock)` for scene transitions, `ConcurrentLinkedQueue` for texture uploads/invalidations. GL thread has no Looper — uses simple `while(isRunning)` loop.
 - **Min API 29 guarantees ES 3.0**: no fallback needed. Request ES 3.0 context, use `GLES30` API with `#version 300 es` shaders.
 - **Integration points**: `SceneCompositor.start(encoderInputSurface, screenSurfaceTexture, width, height)` — Service must pass from its VirtualDisplay SurfaceTexture. `requestScene(scene)` for scene changes. `updateImageTexture(sourceId, bitmap)` for image overlays.
+
+### T15 — SceneManager
+- **Package**: `com.zob.recorder.scene` — 2 files.
+- **SceneManager.kt**: `@Singleton` with `@Inject constructor(@ApplicationContext)`. State via `MutableStateFlow` for scenes list, activeSceneId, isTransitioning. Derives `activeScene: StateFlow<Scene?>` via `combine(scenes, activeSceneId).stateIn()`. 
+- **CRUD**: createScene, deleteScene, updateScene, reorderScenes, setActiveScene, duplicateScene. All trigger `scheduleSave()` (500ms debounce via `CoroutineScope` + `delay`).
+- **Source management**: addSource, removeSource, updateSource, reorderSources — all operate on the sources list within a target scene.
+- **Persistence**: JSON via `kotlinx.serialization` to `context.filesDir/scenes/scenes.json`. Writes wrapped in `SceneData(scenes, activeSceneId)`. Auto-loads on init, seeds a default scene if empty.
+- **SceneDefaults.kt**: `object` with factory functions: `defaultScreenSource()`, `createDefaultScene()`, `createSceneWithText()`, `createSceneWithImage()`, `createDefaultScenes()`.
+- **SceneModule.kt**: `@Module @InstallIn(SingletonComponent)` provides `@Named("scenesDir") File` for the scenes directory.
+- Integration: `onTransitionComplete()` for SceneCompositor to signal done. `onCleared()` for test lifecycle.
+- **Edge cases**: deleted active scene → first remaining scene becomes active; corrupted JSON → logs error, starts with defaults; setActiveScene with invalid ID → no-op.
