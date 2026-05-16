@@ -43,3 +43,27 @@
 - **`.gitignore`** — Standard Android ignores: build, .gradle, local.properties, *.apk, *.aab, *.jks, signing.properties
 - **`README.md`** — Project overview with features, tech stack table, build instructions, CI badge placeholder, MIT license
 - **Git** — Repo initialized on `main` branch with initial commit
+
+## Wave 2: Infrastructure (T6-T10)
+### T6 — Navigation + Screen Scaffolds
+- **Routes.kt** defines 5 `@Serializable` route objects/classes (HomeRoute, SceneEditorRoute(sceneId), SettingsRoute, StreamingConfigRoute, RecordingPlaybackRoute(recordingId))
+- **AppNavHost.kt** — NavHost with composable routes for all 5 destinations
+- **ZobApp.kt** — Root Scaffold with BottomNavigationBar (Home, Scenes, Settings tabs) plus FloatingActionButton route to SceneEditor
+- **MainActivity.kt** — @AndroidEntryPoint, edge-to-edge via WindowCompat.setDecorFitsSystemWindows, ZobTheme + ZobApp + PermissionGate wrapper
+- 5 screen scaffolds (HomeScreen, SceneEditorScreen, SettingsScreen, StreamingConfigScreen, RecordingPlaybackScreen) — placeholder composables
+
+### T7 — Hilt DI
+- **AppModule.kt** — @Module @InstallIn(SingletonComponent): provides MediaProjectionManager, DataStore<Preferences>, CoroutineDispatchers(Main/IO/Default)
+- **RecordingModule.kt** — @Module @InstallIn(SingletonComponent): provides recording directory File via @Named("recordingDir")
+- **ZobApplication.kt** — @HiltAndroidApp, creates notification channel in onCreate()
+
+### T8 — Permission Handling
+- **PermissionManager.kt** — Request/check functions for: RECORD_AUDIO (runtime), POST_NOTIFICATIONS (API33+), MediaProjection (ActivityResultLauncher<Intent>). Check functions use ContextCompat.checkSelfPermission + MediaProjectionManager check. Uses Build.VERSION_CODES.TIRAMISU branching.
+- **PermissionGate.kt** — Composable wrapper showing permission rationale UI with step-by-step flow: Audio → Notifications → Enable Recording launches ConsentIntent. Uses accompanist-permissions for runtime tracking.
+
+### T9 — Data Repositories
+- **SettingsRepository.kt** — DataStore<Preferences> backed: themeMode enum, rtmpUrl, streamKey, defaultPresetId, recordingResolution, recordingFps, recordingBitrate, hasCompletedOnboarding. Each as Flow<T> + suspend setter with singleScopePreference.
+- **RecordingRepository.kt** — Queries MediaStore.Video.Media for recording list, delete via ContentResolver, File URI resolution.
+
+### T10 — Notification Helper
+- **NotificationHelper.kt** — Creates "Zob Recording" channel (IMPORTANCE_LOW). Builds: recording notification (stop, pause/resume actions), streaming notification, error notification. Notification IDs: NOTIFICATION_ID_RECORDING=1001, NOTIFICATION_ID_STREAMING=1002, NOTIFICATION_ID_ERROR=1003.

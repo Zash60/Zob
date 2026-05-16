@@ -416,7 +416,7 @@ Wave FINAL — 4 parallel reviews:
   - Message: `feat: material 3 theme (light/dark) with typography`
   - Files: `app/src/main/java/com/zob/recorder/ui/theme/*.kt`
 
-- [ ] 5. **GitHub Actions CI/CD + README + repo init**
+- [x] 5. **GitHub Actions CI/CD + README + repo init**
 
   **What to do**:
   - Create `.github/workflows/ci.yml`:
@@ -471,7 +471,7 @@ Wave FINAL — 4 parallel reviews:
   - Message: `ci: github actions workflow and project readme`
   - Files: `.github/`, `README.md`, `.gitignore`
 
-- [ ] 6. **Navigation Compose + screen scaffolds**
+- [x] 6. **Navigation Compose + screen scaffolds**
 
   **What to do**:
   - Create `com.zob.recorder.navigation` package:
@@ -523,7 +523,7 @@ Wave FINAL — 4 parallel reviews:
   - Message: `feat: navigation setup with screen scaffolds`
   - Files: `app/src/main/java/com/zob/recorder/navigation/`, `ui/screens/*.kt`, `ZobApp.kt`
 
-- [ ] 7. **Hilt dependency injection modules**
+- [x] 7. **Hilt dependency injection modules**
 
   **What to do**:
   - Create `com.zob.recorder.di` package:
@@ -573,7 +573,7 @@ Wave FINAL — 4 parallel reviews:
   - Message: `feat: hilt dependency injection modules`
   - Files: `app/src/main/java/com/zob/recorder/di/`, `ZobApplication.kt`
 
-- [ ] 8. **Permission handler + onboarding flow**
+- [x] 8. **Permission handler + onboarding flow**
 
   **What to do**:
   - Create `com.zob.recorder.permission` package:
@@ -627,7 +627,7 @@ Wave FINAL — 4 parallel reviews:
   **Commit**: YES (groups with T9, T10)
   - Message: `feat: permission handling flow with accompanist`
 
-- [ ] 9. **Settings repository (DataStore)**
+- [x] 9. **Settings repository (DataStore)**
 
   **What to do**:
   - Create `com.zob.recorder.data` package:
@@ -685,7 +685,7 @@ Wave FINAL — 4 parallel reviews:
 
   **Commit**: YES (groups with T8, T10)
 
-- [ ] 10. **Notification channel + recording controls notification**
+- [x] 10. **Notification channel + recording controls notification**
 
   **What to do**:
   - Create `com.zob.recorder.notification` package:
